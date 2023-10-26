@@ -871,7 +871,7 @@ _pygi_argument_to_object (GIArgument  *arg,
                 }
                 case GI_INFO_TYPE_INTERFACE:
                 case GI_INFO_TYPE_OBJECT:
-                    object = pygi_arg_gobject_to_py_called_from_c (arg, transfer);
+                    object = pygi_arg_object_to_py_called_from_c (arg, transfer);
 
                     break;
                 default:

@@ -119,6 +119,64 @@ regress_test_glist_boxed_full_return (guint count)
     return list;
 }
 
+/**
+ * regress_test_array_of_fundamental_objects_in
+ * @list: (array length=len) (element-type RegressTestFundamentalObject): An array of #RegressTestFundamentalObject
+ * @len: length of the list
+ **/
+gboolean
+regress_test_array_of_fundamental_objects_in (RegressTestFundamentalObject **list, gsize len)
+{
+    gsize i;
+  
+    for (i = 0; i < len; i++) {
+        if (!REGRESS_TEST_IS_FUNDAMENTAL_OBJECT (list[i])) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+/**
+ * regress_test_array_of_fundamental_objects_out
+ * @len: (out): length of the list
+ * Returns: (array length=len) (transfer full): An array of #RegressTestFundamentalObject
+ **/
+RegressTestFundamentalObject **
+regress_test_array_of_fundamental_objects_out (gsize *len)
+{
+    RegressTestFundamentalObject **objs;
+    int i;
+
+    objs = g_new (RegressTestFundamentalObject *, 2);
+    
+    for (i = 0; i < 2; i++) {
+        objs[i] = (RegressTestFundamentalObject *) regress_test_fundamental_sub_object_new("foo");
+    }
+    *len = 2;
+    return objs;
+}
+
+/**
+ * regress_test_fundamental_argument_in
+ * @obj: (transfer full): A #RegressTestFundamentalObject
+ **/
+gboolean
+regress_test_fundamental_argument_in (RegressTestFundamentalObject *obj)
+{
+    return REGRESS_TEST_IS_FUNDAMENTAL_OBJECT (obj);
+}
+
+/**
+ * regress_test_fundamental_argument_out
+ * @obj: (transfer none): A #RegressTestFundamentalObject
+ * Returns: (transfer none): Same #RegressTestFundamentalObject
+ **/
+RegressTestFundamentalObject*
+regress_test_fundamental_argument_out (RegressTestFundamentalObject *obj)
+{
+    return obj;
+}
 
 #ifndef _GI_DISABLE_CAIRO
 
