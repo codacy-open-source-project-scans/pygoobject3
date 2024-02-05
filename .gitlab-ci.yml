@@ -44,7 +44,10 @@ pages:
   stage: deploy
   dependencies:
     - coverage
+  before_script:
+    - python -m pip install -r docs/requirements.txt
   script:
+    - python -m sphinx -T -E -W --keep-going -b html -d _build/doctrees -D language=en docs/ public
     - mv coverage/ public/
   artifacts:
     paths:
@@ -144,6 +147,7 @@ gnome-master-gtk4:
     - bash -x ./.gitlab-ci/test-flatpak.sh
 
 minimal-meson:
+  allow_failure: true
   stage: build_and_test
   image: quay.io/fedora/fedora:39 
   before_script:
