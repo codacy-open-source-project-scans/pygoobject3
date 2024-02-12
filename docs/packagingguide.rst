@@ -1,7 +1,7 @@
 Packaging Guide
 ===============
 
-Some notes on how to package PyGObject
+PyGObject uses Meson, here are some notes on how to package PyGObject.
 
 Source packages can be found at
 https://download.gnome.org/sources/pygobject
@@ -14,9 +14,10 @@ Existing Packages:
 
 Building::
 
-    python3 setup.py build
-    python3 setup.py test # if you want to run the test suite
-    python3 setup.py install --prefix="${PREFIX}" --root="${PKGDIR}"
+    meson setup --prefix /usr --buildtype=plain _build -Dc_args=... -Dc_link_args=...
+    meson compile -C _build
+    meson test -C _build
+    DESTDIR=/path/to/staging/root meson install -C _build
 
 Runtime dependencies:
 
