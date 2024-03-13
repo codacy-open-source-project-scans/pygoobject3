@@ -1,6 +1,6 @@
 [project]
 name = "PyGObject"
-version = "3.47.1"
+version = "3.49.0"
 description = "Python bindings for GObject Introspection"
 license = { text = "GNU Lesser General Public License v2.1 (LGPLv2.1)" }
 authors = [
@@ -20,7 +20,7 @@ classifiers = [
     "Programming Language :: Python",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-requires-python = ">=3.8, <4"
+requires-python = ">=3.9, <4"
 dependencies = [
     "pycairo>=1.16"
 ]
@@ -42,7 +42,7 @@ docs = [
 ]
 
 [tool.meson-python.args]
-setup = ["-Dwheel=true", "--wrap-mode=nofallback"]
+setup = ["-Dtests=false", "-Dwheel=true", "--wrap-mode=nofallback"]
 
 [tool.pytest.ini_options]
 testpaths = [

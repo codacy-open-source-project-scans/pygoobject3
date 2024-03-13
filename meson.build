@@ -1,5 +1,5 @@
 project('pygobject', 'c',
-  version : '3.47.1',
+  version : '3.49.0',
   meson_version : '>= 0.64.0',
   default_options : [ 'warning_level=1',
                       'buildtype=debugoptimized'])
@@ -15,8 +15,8 @@ platform_version = '@0@.0'.format(pygobject_version_major)
 pymod = import('python')
 python = pymod.find_installation(get_option('python'), pure: false)
 
-if python.language_version().version_compare('< 3.8')
-  error('Requires Python >= 3.8')
+if python.language_version().version_compare('< 3.9')
+  error('Requires Python >= 3.9')
 endif
 
 python_dep = python.dependency()
