@@ -46,7 +46,6 @@
 #include "pygoptioncontext.h"
 #include "pygoptiongroup.h"
 #include "pygspawn.h"
-#include "pygparamspec.h"
 #include "pygpointer.h"
 #include "pygobject-internal.h"
 #include "pygi-value.h"
@@ -408,58 +407,20 @@ create_property (const gchar  *prop_name,
     return pspec;
 }
 
+static PyObject *
+pyg_param_spec_new (GParamSpec *pspec)
+{
+    PyErr_SetString (PyExc_NotImplementedError,
+                     "Creating ParamSpecs through pyg_param_spec_new is no longer supported");
+    return NULL;
+}
+
 static GParamSpec *
 pyg_param_spec_from_object (PyObject *tuple)
 {
-    Py_ssize_t val_length;
-    const gchar *prop_name;
-    GType prop_type;
-    const gchar *nick, *blurb;
-    PyObject *slice, *item, *py_prop_type;
-    GParamSpec *pspec;
-    gint intvalue;
-
-    val_length = PyTuple_Size(tuple);
-    if (val_length < 4) {
-	PyErr_SetString(PyExc_TypeError,
-			"paramspec tuples must be at least 4 elements long");
-	return NULL;
-    }
-
-    slice = PySequence_GetSlice(tuple, 0, 4);
-    if (!slice) {
-	return NULL;
-    }
-
-    if (!PyArg_ParseTuple(slice, "sOzz", &prop_name, &py_prop_type, &nick, &blurb)) {
-	Py_DECREF(slice);
-	return NULL;
-    }
-
-    Py_DECREF(slice);
-
-    prop_type = pyg_type_from_object(py_prop_type);
-    if (!prop_type) {
-	return NULL;
-    }
-
-    item = PyTuple_GetItem(tuple, val_length-1);
-    if (!PyLong_Check (item)) {
-	PyErr_SetString(PyExc_TypeError,
-			"last element in tuple must be an int");
-	return NULL;
-    }
-
-    if (!pygi_gint_from_py (item, &intvalue))
-	return NULL;
-
-    /* slice is the extra items in the tuple */
-    slice = PySequence_GetSlice(tuple, 4, val_length-1);
-    pspec = create_property(prop_name, prop_type,
-			    nick, blurb, slice,
-			    intvalue);
-
-    return pspec;
+    PyErr_SetString (PyExc_NotImplementedError,
+                     "Creating ParamSpecs through pyg_param_spec_from_object is no longer supported");
+    return NULL;
 }
 
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
@@ -922,7 +883,7 @@ pyg_object_set_property (GObject *object, guint property_id,
 	return;
     }
 
-    py_pspec = pyg_param_spec_new(pspec);
+    py_pspec = pygi_fundamental_new(pspec);
     py_value = pyg_value_as_pyobject (value, TRUE);
 
     retval = PyObject_CallMethod(object_wrapper, "do_set_property",
@@ -2263,7 +2224,7 @@ pyg_object_class_list_properties (PyObject *self, PyObject *args)
 	return NULL;
     }
     for (i = 0; i < nprops; i++) {
-	PyTuple_SetItem(list, i, pyg_param_spec_new(specs[i]));
+	PyTuple_SetItem(list, i, pygi_fundamental_new(specs[i]));
     }
     g_free(specs);
     if (class)
@@ -2372,6 +2333,8 @@ static struct PyGI_API CAPI = {
   pygi_register_foreign_struct,
 };
 
+const gpointer PyGParamSpec_Type_Stub = NULL;
+
 struct _PyGObject_Functions pygobject_api_functions = {
   pygobject_register_class,
   pygobject_register_wrapper,
@@ -2411,7 +2374,7 @@ struct _PyGObject_Functions pygobject_api_functions = {
   (PyGThreadBlockFunc)0, /* block_threads */
   (PyGThreadBlockFunc)0, /* unblock_threads */
 
-  &PyGParamSpec_Type,
+  (PyTypeObject *) &PyGParamSpec_Type_Stub,
   pyg_param_spec_new,
   pyg_param_spec_from_object,
 
@@ -2617,8 +2580,6 @@ _gi_exec (PyObject *module)
     if ((ret = pyi_object_register_types (module_dict)) < 0)
         return ret;
     if ((ret = pygi_interface_register_types (module_dict)) < 0)
-        return ret;
-    if ((ret = pygi_paramspec_register_types (module_dict)) < 0)
         return ret;
     if ((ret = pygi_enum_register_types (module_dict)) < 0)
         return ret;
