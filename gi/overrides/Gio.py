@@ -90,6 +90,34 @@ __all__.append('DBusArgInfo')
 
 
 @override
+class DBusConnection(Gio.DBusConnection):
+    __init__ = _warn_init(Gio.DBusConnection)
+
+    def register_object(self,
+                        object_path,
+                        interface_info,
+                        method_call_closure,
+                        get_property_closure,
+                        set_property_closure):
+        def wrapped_method_call_closure(connection, sender, object_path,
+                                        interface_name, method_name, parameters,
+                                        invocation):
+            method_call_closure(connection, sender, object_path,
+                                interface_name, method_name, parameters,
+                                invocation)
+            invocation._unref()
+
+        return super().register_object(object_path,
+                                       interface_info,
+                                       wrapped_method_call_closure,
+                                       get_property_closure,
+                                       set_property_closure)
+
+
+__all__.append('DBusConnection')
+
+
+@override
 class DBusMethodInfo(Gio.DBusMethodInfo):
     __init__ = _warn_init(Gio.DBusMethodInfo)
 
@@ -566,3 +594,18 @@ class DataInputStream(Gio.DataInputStream):
 
 DataInputStream = override(DataInputStream)
 __all__.append('DataInputStream')
+
+
+class File(Gio.File):
+
+    def __fspath__(self):
+        path = self.peek_path()
+        # A file isn't guaranteed to have a path associated and returning
+        # `None` here will result in a `TypeError` trying to subscribe to it.
+        if path is None or path == '':
+            raise TypeError('File has no associated path.')
+        return path
+
+
+File = override(File)
+__all__.append('File')
